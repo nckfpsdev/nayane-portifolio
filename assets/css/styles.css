@@ -870,11 +870,176 @@ details > summary::-webkit-details-marker { display: none; }
 }
 
 /* ==========================================================================
+   MOVIMENTO
+   Camada só de animação: nada aqui muda o visual final da página. Os estados
+   "escondido" só existem quando o main.js marca o elemento com data-reveal,
+   então sem JavaScript tudo aparece normalmente.
+   ========================================================================== */
+:root {
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  interpolate-size: allow-keywords;
+}
+
+@keyframes rise {
+  from { opacity: 0; translate: 0 30px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+@keyframes drop {
+  from { opacity: 0; translate: 0 -18px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+@keyframes petalOpen {
+  from { opacity: 0; clip-path: inset(20% 20% 20% 20%); scale: 1.14; }
+  to   { opacity: 1; clip-path: inset(-80px); scale: 1; }
+}
+@keyframes haloIn {
+  from { opacity: 0; }
+  to   { opacity: .13; }
+}
+@keyframes sway {
+  0%, 100% { rotate: -3deg; }
+  50%      { rotate: 4deg; }
+}
+@keyframes drift {
+  to { rotate: 360deg; }
+}
+@keyframes barGrow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes lineGrow {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; translate: 0 -6px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+/* --- Entrada do hero (desktop) --- */
+.d-header { animation: drop .8s var(--ease) both; }
+.d-hero h1            { animation: rise 1s var(--ease) .1s both; }
+.d-hero__txt .d-lead  { animation: rise 1s var(--ease) .26s both; }
+.d-hero__cta          { animation: rise 1s var(--ease) .4s both; }
+.d-hero__facts li:nth-child(1) { animation: rise .9s var(--ease) .56s both; }
+.d-hero__facts li:nth-child(2) { animation: rise .9s var(--ease) .68s both; }
+
+.d-hero__foto { animation: petalOpen 1.5s var(--ease) .15s both; }
+.d-hero__halo {
+  animation: haloIn 1.6s ease .5s both, drift 160s linear infinite;
+  translate: calc(var(--mx, 0) * -16px) calc(var(--sy, 0) * .12px + var(--my, 0) * -12px);
+}
+.d-hero__flor {
+  animation: bloom 1.3s var(--ease) .75s both, sway 7s ease-in-out 2.2s infinite;
+  translate: calc(var(--mx, 0) * 22px) calc(var(--sy, 0) * -.07px + var(--my, 0) * 16px);
+}
+.d-hero__foto {
+  translate: calc(var(--mx, 0) * 6px) calc(var(--my, 0) * 4px);
+}
+
+/* --- Entrada do hero (celular) --- */
+.m-hero__foto > .petal { animation: petalOpen 1.4s var(--ease) .05s both; }
+.m-hero__flor { animation: bloom 1.2s var(--ease) .7s both, sway 7s ease-in-out 2s infinite; }
+.m-hero__card { animation: rise 1s var(--ease) .35s both; }
+.m-hero__card > h1, .m-hero__card > p, .m-hero__card > .btn, .m-quick li { animation: rise .9s var(--ease) both; }
+.m-hero__card > h1 { animation-delay: .5s; }
+.m-hero__card > .m-hero__crp { animation-delay: .58s; }
+.m-hero__card > .m-hero__tag { animation-delay: .66s; }
+.m-hero__card > .btn { animation-delay: .76s; }
+.m-quick li:nth-child(1) { animation-delay: .88s; }
+.m-quick li:nth-child(2) { animation-delay: .96s; }
+.m-quick li:nth-child(3) { animation-delay: 1.04s; }
+.m-bar { animation: rise .9s var(--ease) 1.1s both; }
+
+/* --- Cabeçalho e menu --- */
+.d-header { transition: box-shadow .3s ease, background-color .3s ease; }
+.d-header.is-stuck { box-shadow: 0 14px 28px -24px rgba(120, 60, 30, .55); background: rgba(253, 238, 226, .96); }
+.d-nav a.is-active::after { transform: scaleX(1); }
+
+/* --- Revelar ao rolar --- */
+[data-reveal] { opacity: 0; translate: 0 var(--rise, 28px); }
+[data-reveal="fade"]  { translate: none; }
+[data-reveal="scale"] { translate: 0 22px; scale: .965; }
+[data-reveal="left"]  { translate: 36px 0; }
+[data-reveal="photo"] { clip-path: inset(14% 14% 14% 14%); scale: 1.07; translate: none; }
+[data-reveal].is-in {
+  opacity: 1;
+  translate: none;
+  scale: 1;
+  transition:
+    opacity .9s var(--ease) var(--d, 0ms),
+    translate 1s var(--ease) var(--d, 0ms),
+    scale 1.2s var(--ease) var(--d, 0ms),
+    clip-path 1.3s var(--ease) var(--d, 0ms),
+    filter .5s ease,
+    transform .3s var(--ease),
+    box-shadow .3s ease;
+}
+[data-reveal="photo"].is-in { clip-path: inset(-80px); }
+
+/* Linhas que se desenham quando o bloco aparece */
+.d-steps li[data-reveal]::before { transform: scaleX(0); transform-origin: left; }
+.d-steps li[data-reveal].is-in::before { animation: barGrow .9s var(--ease) calc(var(--d, 0ms) + 350ms) both; }
+.m-steps li[data-reveal]:not(:last-child)::after { transform: scaleY(0); transform-origin: top; }
+.m-steps li[data-reveal].is-in:not(:last-child)::after { animation: lineGrow .8s var(--ease) calc(var(--d, 0ms) + 300ms) both; }
+.d-quote[data-reveal]::before, .m-quote[data-reveal]::before { transform: scaleY(0); transform-origin: top; }
+.d-quote[data-reveal].is-in::before, .m-quote[data-reveal].is-in::before { animation: lineGrow .9s var(--ease) calc(var(--d, 0ms) + 250ms) both; }
+
+/* Flores decorativas: leve balanço e profundidade ao rolar */
+.d-empresas__flor, .d-cta__flor {
+  translate: 0 calc(var(--py, 0) * 1px);
+  animation: sway 9s ease-in-out infinite;
+}
+.d-cta__flor { animation-duration: 11s; animation-delay: -3s; }
+
+/* --- Micro-interações --- */
+.btn { transition: background-color .2s ease, transform .25s var(--ease), box-shadow .25s ease; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 16px 26px -14px rgba(207, 50, 88, .85); }
+.btn--paper:hover, .btn--ghost:hover { box-shadow: 0 14px 24px -16px rgba(11, 54, 80, .5); }
+.btn--ghost:hover { box-shadow: inset 0 0 0 1.5px var(--petrol), 0 14px 24px -16px rgba(11, 54, 80, .5); }
+.btn:active { transform: translateY(1px); }
+.btn .ico { transition: transform .35s var(--ease); }
+.btn:hover .ico { transform: rotate(-8deg) scale(1.12); }
+.link { transition: text-decoration-color .2s ease, color .2s ease; }
+
+.d-pilares__list .ico, .d-formatos .ico { transition: transform .4s var(--ease); }
+.d-pilares__list li:hover .ico, .d-formatos li:hover .ico { transform: translateY(-4px) scale(1.08); }
+.d-ajudar__list .ico-petal { transition: transform .5s var(--ease); }
+.d-ajudar__list li:hover .ico-petal { transform: rotate(72deg) scale(1.15); }
+.d-steps li::after { transition: color .4s ease, transform .5s var(--ease); }
+.d-steps li:hover::after { color: var(--orange); transform: translateY(-3px); }
+.d-galeria img:hover { filter: saturate(1.08) brightness(1.03); }
+.d-cta__links a { transition: translate .25s var(--ease); }
+.d-cta__links a:hover { translate: 3px 0; }
+
+.m-item { transition: transform .3s var(--ease), box-shadow .3s ease; }
+.m-item:active { transform: scale(.98); }
+.m-item__go { transition: translate .3s var(--ease); }
+.m-item:active .m-item__go { translate: 4px 0; }
+.m-quick a:active span { transform: scale(.92); }
+.m-quick span { transition: transform .25s var(--ease); }
+
+/* --- Acordeões: abrem e fecham com suavidade --- */
+details::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition: block-size .4s var(--ease), content-visibility .4s allow-discrete;
+}
+details[open]::details-content { block-size: auto; }
+details[open] > :not(summary) { animation: fadeIn .5s var(--ease) .05s both; }
+.d-faq__list summary, .m-acc summary { transition: color .2s ease; }
+.d-faq__list summary:hover { color: var(--coral); }
+
+/* ==========================================================================
    Preferências do sistema
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
+  [data-reveal] { opacity: 1 !important; translate: none !important; scale: none !important; clip-path: none !important; }
+  .d-hero__halo, .d-hero__flor, .d-hero__foto, .d-empresas__flor, .d-cta__flor { translate: none !important; }
+  .d-steps li[data-reveal]::before, .m-steps li[data-reveal]::after,
+  .d-quote[data-reveal]::before, .m-quote[data-reveal]::before { transform: none !important; }
 }
 
 @media print {
