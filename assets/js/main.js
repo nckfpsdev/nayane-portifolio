@@ -32,6 +32,65 @@
   });
 })();
 
+/* Vídeo do trajeto até o consultório.
+   Só carrega e toca quando aparece na tela (a versão escondida, desktop ou
+   celular, nunca baixa). Quem pede menos movimento, ou economia de dados, vê a
+   imagem parada e pode tocar pelo botão. O botão também pausa a qualquer momento. */
+(function () {
+  'use strict';
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var saveData = navigator.connection && navigator.connection.saveData;
+
+  document.querySelectorAll('[data-trajeto]').forEach(function (fig) {
+    var video = fig.querySelector('video');
+    var btn = fig.querySelector('.trajeto__toggle');
+    if (!video || !btn) return;
+
+    video.muted = true; // exigido pelo iOS para tocar sozinho
+    var paused = reduce || saveData; // escolha da pessoa (ou preferência do sistema)
+    var visible = false;
+
+    function render() {
+      var playing = !video.paused;
+      btn.setAttribute('aria-label', playing ? 'Pausar animação do trajeto' : 'Reproduzir animação do trajeto');
+      btn.querySelector('use').setAttribute('href', playing ? '#i-pause' : '#i-play');
+    }
+
+    function sync() {
+      if (visible && !paused) {
+        if (video.preload !== 'auto') video.preload = 'auto';
+        var p = video.play();
+        if (p && p.catch) p.catch(function () { paused = true; render(); });
+      } else if (!video.paused) {
+        video.pause();
+      }
+    }
+
+    video.addEventListener('play', render);
+    video.addEventListener('pause', render);
+    btn.addEventListener('click', function () {
+      paused = !video.paused;
+      if (!paused) visible = true;
+      sync();
+      if (paused) video.pause();
+    });
+
+    btn.hidden = false;
+    render();
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+        sync();
+      }, { threshold: 0.35 }).observe(video);
+    } else {
+      visible = true;
+      sync();
+    }
+  });
+})();
+
 /* Movimento (revelar ao rolar, profundidade no hero, menu ativo).
    Só enfeite: se o JavaScript falhar, ou se a pessoa pedir menos movimento
    no sistema, a página aparece completa e parada. */
@@ -60,7 +119,7 @@
     ['.d-empresas__panel', 'scale', 0],
     ['.d-consultorio__head > *', 'up', 100],
     ['.d-galeria img', 'photo', 140],
-    ['.d-endereco', 'up', 0],
+    ['.d-endereco > *', 'up', 110],
     ['.d-faq__intro > *', 'up', 90],
     ['.d-faq__list details', 'up', 60],
     ['.d-cta', 'scale', 0],
@@ -74,7 +133,7 @@
     ['.m-formatos li', 'up', 80],
     ['.m-empresas', 'scale', 0],
     ['.m-gal img', 'left', 110],
-    ['.m-endereco, .m-sec > .btn', 'up', 0],
+    ['.m-trajeto, .m-endereco, .m-sec > .btn', 'up', 0],
     ['.m-quote, .m-more', 'up', 80],
     ['.m-form > *', 'up', 45],
     ['.m-footer > *', 'fade', 60]
