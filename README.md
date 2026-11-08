@@ -30,7 +30,7 @@ robots.txt, vercel.json
 
 ## Antes de publicar
 
-1. Troque `SEU-DOMINIO.com.br` pelo endereço real do site em `index.html`
+1. Se o site ganhar um domínio próprio, troque `nayane-portifolio.vercel.app` pelo novo endereço em `index.html`
    (tag `og:image` e bloco `application/ld+json`; use "buscar e substituir").
    Sem isso, a imagem de prévia ao compartilhar o link não aparece.
 2. Confirme com o CRP-11 as regras de publicidade para psicólogos. O site
