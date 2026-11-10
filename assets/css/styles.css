@@ -429,6 +429,19 @@ details > summary::-webkit-details-marker { display: none; }
   font: 400 2.6rem/1 var(--serif);
   color: var(--peach-deep);
 }
+.d-steps__fig {
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 92px; height: auto;
+  fill: none;
+  stroke: var(--peach-deep);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .7;
+  pointer-events: none;
+}
+.d-steps h3, .d-steps p { position: relative; }
 .d-steps h3 { max-width: 11em; margin-bottom: .6em; font-size: 1.22rem; line-height: 1.3; }
 .d-steps p { margin: 0; font-size: .98rem; color: var(--muted); }
 
