@@ -22,7 +22,7 @@
     var formato = String(data.get('formato') || '').trim();
     var mensagem = String(data.get('text') || '').trim();
 
-    var partes = ['Olá, Nayane! Vim pelo seu site' + (nome ? ' e me chamo ' + nome + '.' : '.')];
+    var partes = ['Olá, Nayane! Através do seu site, conheci seu trabalho' + (nome ? ' e me chamo ' + nome + '.' : '.')];
     if (formato) partes.push('Tenho interesse em atendimento ' + formato + '.');
     if (mensagem) partes.push(mensagem);
 
