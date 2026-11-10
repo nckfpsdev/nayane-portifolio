@@ -791,6 +791,8 @@ details > summary::-webkit-details-marker { display: none; }
   width: 2px;
   background: var(--line);
 }
+.m-steps li { padding-right: 84px; min-height: 84px; }
+.m-steps__fig { right: 0; bottom: auto; top: 0; width: 64px; }
 .m-steps strong { font: 400 1.12rem/1.35 var(--serif); color: var(--petrol); margin-bottom: .2em; }
 .m-steps span { font-size: .98rem; color: var(--muted); }
 
